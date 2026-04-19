@@ -1,0 +1,48 @@
+name: Fetch Lottery Results Daily
+
+on:
+  # Chạy mỗi ngày lúc 11:45 UTC = 18:45 giờ VN (sau khi xổ số quay xong)
+  schedule:
+    - cron: '45 11 * * *'
+  # Cho phép chạy thủ công từ UI GitHub
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Date to fetch (YYYY-MM-DD), leave empty for today'
+        required: false
+        default: ''
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run fetch script
+        run: |
+          if [ -n "${{ github.event.inputs.date }}" ]; then
+            node scripts/fetch.js "${{ github.event.inputs.date }}"
+          else
+            node scripts/fetch.js
+          fi
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add results/ index.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update lottery results $(date -u +%Y-%m-%d)"
+            git push
+          fi
