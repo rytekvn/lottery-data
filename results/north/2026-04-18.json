@@ -1,0 +1,58 @@
+{
+  "date": "2026-04-18",
+  "fetchedAt": "2026-04-21T10:26:54.089Z",
+  "region": "Miền Bắc",
+  "results": [
+    {
+      "id": "2026-04-18-XSMB&gt; Thứ 7 (Nam Định)",
+      "date": "2026-04-18",
+      "province": "XSMB&gt; Thứ 7 (Nam Định)",
+      "region": "Miền Bắc",
+      "prizes": {
+        "specialPrize": "17243",
+        "firstPrize": "",
+        "secondPrize": [],
+        "thirdPrize": [],
+        "fourthPrize": [],
+        "fifthPrize": [],
+        "sixthPrize": [],
+        "seventhPrize": [],
+        "eighthPrize": []
+      }
+    },
+    {
+      "id": "2026-04-18-ĐẦU",
+      "date": "2026-04-18",
+      "province": "ĐẦU",
+      "region": "Miền Bắc",
+      "prizes": {
+        "specialPrize": "0",
+        "firstPrize": "",
+        "secondPrize": [],
+        "thirdPrize": [],
+        "fourthPrize": [],
+        "fifthPrize": [],
+        "sixthPrize": [],
+        "seventhPrize": [],
+        "eighthPrize": []
+      }
+    },
+    {
+      "id": "2026-04-18-ĐUÔI",
+      "date": "2026-04-18",
+      "province": "ĐUÔI",
+      "region": "Miền Bắc",
+      "prizes": {
+        "specialPrize": "",
+        "firstPrize": "",
+        "secondPrize": [],
+        "thirdPrize": [],
+        "fourthPrize": [],
+        "fifthPrize": [],
+        "sixthPrize": [],
+        "seventhPrize": [],
+        "eighthPrize": []
+      }
+    }
+  ]
+}

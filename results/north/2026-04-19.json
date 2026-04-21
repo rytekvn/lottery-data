@@ -1,0 +1,41 @@
+{
+  "date": "2026-04-19",
+  "fetchedAt": "2026-04-21T10:26:54.243Z",
+  "region": "Miền Bắc",
+  "results": [
+    {
+      "id": "2026-04-19-ĐẦU",
+      "date": "2026-04-19",
+      "province": "ĐẦU",
+      "region": "Miền Bắc",
+      "prizes": {
+        "specialPrize": "93725",
+        "firstPrize": "",
+        "secondPrize": [],
+        "thirdPrize": [],
+        "fourthPrize": [],
+        "fifthPrize": [],
+        "sixthPrize": [],
+        "seventhPrize": [],
+        "eighthPrize": []
+      }
+    },
+    {
+      "id": "2026-04-19-ĐUÔI",
+      "date": "2026-04-19",
+      "province": "ĐUÔI",
+      "region": "Miền Bắc",
+      "prizes": {
+        "specialPrize": "0",
+        "firstPrize": "",
+        "secondPrize": [],
+        "thirdPrize": [],
+        "fourthPrize": [],
+        "fifthPrize": [],
+        "sixthPrize": [],
+        "seventhPrize": [],
+        "eighthPrize": []
+      }
+    }
+  ]
+}

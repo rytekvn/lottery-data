@@ -158,8 +158,13 @@ function parseTextPrizes(text) {
 // ---------- HTML Parser ----------
 
 function parseHTMLResults(html, dateString, region) {
-  // South: tbl-xsmn id MN0 | Central: tbl-xsmn id MT0 | North: tbl-xsmn id MB0
-  const idPrefix = region === 'south' ? 'MN' : region === 'central' ? 'MT' : 'MB';
+  // North có structure rất khác — dùng parser riêng
+  if (region === 'north') {
+    return parseHTMLNorthResults(html, dateString);
+  }
+
+  // South: tbl-xsmn id MN0 | Central: tbl-xsmn id MT0
+  const idPrefix = region === 'south' ? 'MN' : 'MT';
   // Tìm bảng đầu tiên có id bắt đầu với prefix
   const re = new RegExp(`<table[^>]*id=\"${idPrefix}0\"[^>]*>([\\s\\S]*?)</table>`);
   let tableMatch = html.match(re);
@@ -238,6 +243,59 @@ function parseHTMLResults(html, dateString, region) {
   }
 
   return results;
+}
+
+/// Parser riêng cho miền Bắc
+/// HTML structure: <table class="result" id="MB0"> với 4 cột (giải / số / ĐẦU / ĐUÔI)
+function parseHTMLNorthResults(html, dateString) {
+  const tableMatch = html.match(/<table[^>]*id="MB0"[^>]*>([\s\S]*?)<\/table>/);
+  if (!tableMatch) return null;
+  const tableHTML = tableMatch[0];
+
+  const rowRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/g;
+  const rows = [];
+  let m;
+  while ((m = rowRegex.exec(tableHTML)) !== null) {
+    rows.push(m[1]);
+  }
+
+  const prizeMap = {};
+  for (const row of rows) {
+    const titleMatch = row.match(/<td[^>]*title="Giải ([^"]+)"[^>]*>/);
+    if (!titleMatch) continue;
+    const prizeName = titleMatch[1].trim();
+
+    const tdMatches = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)];
+    if (tdMatches.length < 2) continue;
+
+    const numbersHTML = tdMatches[1][1];
+    const cleaned = numbersHTML
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const numbers = cleaned.split(/\s+/).filter(n => /^\d+$/.test(n));
+
+    if (numbers.length > 0) prizeMap[prizeName] = numbers;
+  }
+
+  if (Object.keys(prizeMap).length === 0) return null;
+
+  return [{
+    province: 'Hà Nội',
+    prizes: {
+      specialPrize: (prizeMap['ĐB'] || [])[0] || '',
+      firstPrize: (prizeMap['nhất'] || [])[0] || '',
+      secondPrize: prizeMap['nhì'] || [],
+      thirdPrize: prizeMap['ba'] || [],
+      fourthPrize: prizeMap['tư'] || [],
+      fifthPrize: prizeMap['năm'] || [],
+      sixthPrize: prizeMap['sáu'] || [],
+      seventhPrize: prizeMap['bảy'] || [],
+      eighthPrize: [],
+    }
+  }];
 }
 
 function stripHTML(s) {
