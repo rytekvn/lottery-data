@@ -1,0 +1,87 @@
+{
+  "date": "2026-03-02",
+  "fetchedAt": "2026-04-21T09:18:50.552Z",
+  "region": "Miền Trung",
+  "results": [
+    {
+      "id": "2026-03-02-Thừa Thiên Huế",
+      "date": "2026-03-02",
+      "province": "Thừa Thiên Huế",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "280395",
+        "firstPrize": "77056",
+        "secondPrize": [
+          "26139"
+        ],
+        "thirdPrize": [
+          "89279",
+          "89703"
+        ],
+        "fourthPrize": [
+          "99836",
+          "36330",
+          "52403",
+          "91818",
+          "59560",
+          "04955",
+          "39213"
+        ],
+        "fifthPrize": [
+          "4716"
+        ],
+        "sixthPrize": [
+          "3213",
+          "1061",
+          "7385"
+        ],
+        "seventhPrize": [
+          "453"
+        ],
+        "eighthPrize": [
+          "86"
+        ]
+      }
+    },
+    {
+      "id": "2026-03-02-Phú Yên",
+      "date": "2026-03-02",
+      "province": "Phú Yên",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "758694",
+        "firstPrize": "81941",
+        "secondPrize": [
+          "16735"
+        ],
+        "thirdPrize": [
+          "68889",
+          "71289"
+        ],
+        "fourthPrize": [
+          "24305",
+          "83246",
+          "48729",
+          "86787",
+          "24018",
+          "20393",
+          "57052"
+        ],
+        "fifthPrize": [
+          "9255"
+        ],
+        "sixthPrize": [
+          "4171",
+          "3439",
+          "2689"
+        ],
+        "seventhPrize": [
+          "522"
+        ],
+        "eighthPrize": [
+          "94"
+        ]
+      }
+    }
+  ]
+}

@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 /**
- * Backfill kết quả xổ số miền Nam trong khoảng thời gian.
+ * Backfill kết quả xổ số theo miền trong khoảng ngày.
  * Skip ngày đã có file.
  *
  * Usage:
- *   node scripts/backfill.js 2026-01-01 2026-04-19
+ *   node scripts/backfill.js 2026-01-01 2026-04-19          # south (default)
+ *   node scripts/backfill.js 2026-01-01 2026-04-19 central
+ *   node scripts/backfill.js 2026-01-01 2026-04-19 north
+ *   node scripts/backfill.js 2026-01-01 2026-04-19 all      # cả 3 miền
  */
 
 const fs = require('fs');
 const path = require('path');
-const { fetchDate, saveResults } = require('./fetch');
-
-const RESULTS_DIR = path.join(__dirname, '..', 'results');
+const { fetchDate, saveResults, REGIONS } = require('./fetch');
 
 function* dateRange(start, end) {
   const s = new Date(start + 'T00:00:00Z');
@@ -28,13 +29,11 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function main() {
-  const start = process.argv[2];
-  const end = process.argv[3];
-  if (!start || !end) {
-    console.error('Usage: node scripts/backfill.js YYYY-MM-DD YYYY-MM-DD');
-    process.exit(1);
-  }
+async function backfillOneRegion(start, end, region) {
+  const regionCfg = REGIONS[region];
+  const RESULTS_DIR = path.join(__dirname, '..', 'results', regionCfg.folder);
+
+  console.log(`\n=== Backfilling [${region}] ${regionCfg.name} ===`);
 
   let succeeded = 0;
   let skipped = 0;
@@ -43,32 +42,56 @@ async function main() {
   for (const date of dateRange(start, end)) {
     const filePath = path.join(RESULTS_DIR, `${date}.json`);
     if (fs.existsSync(filePath)) {
-      console.log(`[backfill] ${date} ⏭️  already exists, skip`);
+      console.log(`[${region}] ${date} ⏭️  exists, skip`);
       skipped++;
       continue;
     }
 
     try {
-      const provinces = await fetchDate(date);
+      const provinces = await fetchDate(date, region);
       if (provinces && provinces.length > 0) {
-        saveResults(date, provinces);
-        console.log(`[backfill] ${date} ✅ saved (${provinces.length} provinces)`);
+        saveResults(date, provinces, region);
+        console.log(`[${region}] ${date} ✅ (${provinces.length} provinces)`);
         succeeded++;
       } else {
-        console.log(`[backfill] ${date} ❌ no data`);
+        console.log(`[${region}] ${date} ❌ no data`);
         failed++;
       }
     } catch (err) {
-      console.log(`[backfill] ${date} ❌ error: ${err.message}`);
+      console.log(`[${region}] ${date} ❌ ${err.message}`);
       failed++;
     }
 
-    // Throttle để tránh bị block
     await sleep(500);
   }
 
-  console.log('');
-  console.log(`[backfill] Done: ✅ ${succeeded} new, ⏭️ ${skipped} skipped, ❌ ${failed} failed`);
+  console.log(`\n[${region}] Done: ✅ ${succeeded} new, ⏭️ ${skipped} skipped, ❌ ${failed} failed`);
+  return { succeeded, skipped, failed };
+}
+
+async function main() {
+  const start = process.argv[2];
+  const end = process.argv[3];
+  const region = process.argv[4] || 'south';
+
+  if (!start || !end) {
+    console.error('Usage: node scripts/backfill.js YYYY-MM-DD YYYY-MM-DD [south|central|north|all]');
+    process.exit(1);
+  }
+
+  if (region === 'all') {
+    for (const r of ['south', 'central', 'north']) {
+      await backfillOneRegion(start, end, r);
+    }
+  } else {
+    if (!REGIONS[region]) {
+      console.error(`Unknown region: ${region}`);
+      process.exit(1);
+    }
+    await backfillOneRegion(start, end, region);
+  }
+
+  console.log('\n[backfill] All done!');
 }
 
 main().catch((err) => {

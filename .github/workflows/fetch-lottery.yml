@@ -11,6 +11,16 @@ on:
         description: 'Date to fetch (YYYY-MM-DD), leave empty for today'
         required: false
         default: ''
+      region:
+        description: 'Region (south|central|north|all)'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - south
+          - central
+          - north
 
 jobs:
   fetch:
@@ -27,19 +37,31 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Run fetch script
+      - name: Run fetch scripts
         run: |
-          if [ -n "${{ github.event.inputs.date }}" ]; then
-            node scripts/fetch.js "${{ github.event.inputs.date }}"
+          DATE="${{ github.event.inputs.date }}"
+          REGION="${{ github.event.inputs.region }}"
+          REGION="${REGION:-all}"
+
+          if [ -z "$DATE" ]; then
+            DATE_ARG=""
           else
-            node scripts/fetch.js
+            DATE_ARG="$DATE"
+          fi
+
+          # Nếu region = all thì chạy cho south + central (north chưa hỗ trợ đầy đủ)
+          if [ "$REGION" = "all" ]; then
+            node scripts/fetch.js "${DATE_ARG:-today}" south || echo "South fetch failed"
+            node scripts/fetch.js "${DATE_ARG:-today}" central || echo "Central fetch failed"
+          else
+            node scripts/fetch.js "${DATE_ARG:-today}" "$REGION"
           fi
 
       - name: Commit and push results
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add results/ index.json
+          git add results/
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else

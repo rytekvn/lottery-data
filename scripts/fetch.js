@@ -1,23 +1,41 @@
 #!/usr/bin/env node
 /**
- * Fetch kết quả xổ số miền Nam và lưu thành JSON theo ngày.
+ * Fetch kết quả xổ số và lưu thành JSON theo ngày.
  * Strategy:
  *   1. Thử RSS feed (chỉ có 5 ngày gần nhất, nhanh)
  *   2. Fallback: parse HTML từ URL theo ngày cụ thể
  *
  * Usage:
- *   node scripts/fetch.js            # fetch hôm nay
- *   node scripts/fetch.js 2026-04-08 # fetch ngày cụ thể
+ *   node scripts/fetch.js                       # fetch hôm nay cho south (mặc định)
+ *   node scripts/fetch.js 2026-04-08            # fetch ngày cụ thể cho south
+ *   node scripts/fetch.js 2026-04-08 central    # fetch ngày cụ thể cho central
+ *   node scripts/fetch.js today central         # fetch hôm nay cho central
  */
 
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 
-const RSS_URL = 'https://xskt.com.vn/rss-feed/mien-nam-xsmn.rss';
-const HTML_BASE = 'https://xskt.com.vn/xsmn';
-const RESULTS_DIR = path.join(__dirname, '..', 'results');
-const INDEX_PATH = path.join(__dirname, '..', 'index.json');
+const REGIONS = {
+  south: {
+    name: 'Miền Nam',
+    rss: 'https://xskt.com.vn/rss-feed/mien-nam-xsmn.rss',
+    htmlBase: 'https://xskt.com.vn/xsmn',
+    folder: 'south',
+  },
+  central: {
+    name: 'Miền Trung',
+    rss: 'https://xskt.com.vn/rss-feed/mien-trung-xsmt.rss',
+    htmlBase: 'https://xskt.com.vn/xsmt',
+    folder: 'central',
+  },
+  north: {
+    name: 'Miền Bắc',
+    rss: 'https://xskt.com.vn/rss-feed/mien-bac-xsmb.rss',
+    htmlBase: 'https://xskt.com.vn/xsmb',
+    folder: 'north',
+  },
+};
 
 // ---------- HTTP ----------
 
@@ -45,7 +63,6 @@ function todayString() {
 }
 
 function toUrlFormat(dateString) {
-  // 2026-01-01 → 1-1-2026
   const [y, m, d] = dateString.split('-');
   return `${parseInt(d)}-${parseInt(m)}-${y}`;
 }
@@ -140,13 +157,19 @@ function parseTextPrizes(text) {
 
 // ---------- HTML Parser ----------
 
-function parseHTMLResults(html, dateString) {
-  // Tìm bảng có class tbl-xsmn
-  const tableMatch = html.match(/<table[^>]*tbl-xsmn[^>]*>([\s\S]*?)<\/table>/);
+function parseHTMLResults(html, dateString, region) {
+  // South: tbl-xsmn id MN0 | Central: tbl-xsmn id MT0 | North: tbl-xsmn id MB0
+  const idPrefix = region === 'south' ? 'MN' : region === 'central' ? 'MT' : 'MB';
+  // Tìm bảng đầu tiên có id bắt đầu với prefix
+  const re = new RegExp(`<table[^>]*id=\"${idPrefix}0\"[^>]*>([\\s\\S]*?)</table>`);
+  let tableMatch = html.match(re);
+  if (!tableMatch) {
+    // Fallback: tìm bảng đầu tiên có class tbl-xsmn
+    tableMatch = html.match(/<table[^>]*tbl-xsmn[^>]*>([\s\S]*?)<\/table>/);
+  }
   if (!tableMatch) return null;
   const tableHTML = tableMatch[0];
 
-  // Parse các <tr>
   const rows = [];
   const trRegex = /<tr[^>]*>([\s\S]*?)<\/tr>/g;
   let m;
@@ -155,23 +178,18 @@ function parseHTMLResults(html, dateString) {
   }
   if (rows.length < 2) return null;
 
-  // Hàng đầu = header với tên tỉnh
   const headerRow = rows[0];
   const provinces = [];
   const thRegex = /<th[^>]*>([\s\S]*?)<\/th>/g;
   let thMatch;
   while ((thMatch = thRegex.exec(headerRow)) !== null) {
     const text = stripHTML(thMatch[1]);
-    // Bỏ qua cột đầu (ngày/thứ), chỉ lấy tên tỉnh
     if (!/^Thứ|Chủ|CN|^\d/.test(text) && text.length > 0) {
       provinces.push(text);
     }
   }
   if (provinces.length === 0) return null;
 
-  // Parse các hàng giải
-  // Mỗi row: <td title="Giải X">...</td> + N cột td chứa số
-  // Cấu trúc: G.8, G.7, G.6, G.5, G.4, G.3, G.2, G.1, ĐB (9 rows)
   const prizeMap = {};
   for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
@@ -183,13 +201,10 @@ function parseHTMLResults(html, dateString) {
     }
     if (tds.length === 0) continue;
 
-    // Cột đầu là tên giải
     const prizeLabel = stripHTML(tds[0]).trim();
-    // Các cột còn lại là số của từng tỉnh
     for (let p = 0; p < provinces.length; p++) {
       const cellHTML = tds[p + 1];
       if (!cellHTML) continue;
-      // Split theo <br>, strip tags, trim
       const numbers = cellHTML
         .split(/<br\s*\/?>/i)
         .map((s) => stripHTML(s).trim())
@@ -200,7 +215,6 @@ function parseHTMLResults(html, dateString) {
     }
   }
 
-  // Build result object per province
   const results = [];
   for (const province of provinces) {
     const raw = prizeMap[province] || {};
@@ -238,8 +252,9 @@ function stripHTML(s) {
 
 // ---------- Main fetch logic ----------
 
-async function fetchFromRSS(targetDate) {
-  const xml = await fetchUrl(RSS_URL);
+async function fetchFromRSS(targetDate, region) {
+  const regionCfg = REGIONS[region];
+  const xml = await fetchUrl(regionCfg.rss);
   const items = parseRSSItems(xml);
   for (const item of items) {
     const d = extractDate(item.title, item.link);
@@ -250,45 +265,53 @@ async function fetchFromRSS(targetDate) {
   return null;
 }
 
-async function fetchFromHTML(targetDate) {
+async function fetchFromHTML(targetDate, region) {
+  const regionCfg = REGIONS[region];
   const urlDate = toUrlFormat(targetDate);
-  const url = `${HTML_BASE}/ngay-${urlDate}`;
+  const url = `${regionCfg.htmlBase}/ngay-${urlDate}`;
   const html = await fetchUrl(url);
-  return parseHTMLResults(html, targetDate);
+  return parseHTMLResults(html, targetDate, region);
 }
 
-async function fetchDate(targetDate) {
-  // 1. Try RSS first (fast)
-  console.log(`[fetch] ${targetDate} - trying RSS...`);
-  let provinces = await fetchFromRSS(targetDate);
+async function fetchDate(targetDate, region = 'south') {
+  if (!REGIONS[region]) {
+    throw new Error(`Unknown region: ${region}`);
+  }
+
+  console.log(`[fetch] ${targetDate} [${region}] - trying RSS...`);
+  let provinces = await fetchFromRSS(targetDate, region);
   if (provinces && provinces.length > 0) {
-    console.log(`[fetch] ${targetDate} ✅ RSS returned ${provinces.length} provinces`);
+    console.log(`[fetch] ${targetDate} [${region}] ✅ RSS returned ${provinces.length} provinces`);
     return provinces;
   }
 
-  // 2. Fallback to HTML
-  console.log(`[fetch] ${targetDate} - fallback to HTML...`);
-  provinces = await fetchFromHTML(targetDate);
+  console.log(`[fetch] ${targetDate} [${region}] - fallback to HTML...`);
+  provinces = await fetchFromHTML(targetDate, region);
   if (provinces && provinces.length > 0) {
-    console.log(`[fetch] ${targetDate} ✅ HTML returned ${provinces.length} provinces`);
+    console.log(`[fetch] ${targetDate} [${region}] ✅ HTML returned ${provinces.length} provinces`);
     return provinces;
   }
 
   return null;
 }
 
-function saveResults(targetDate, provinces) {
+function saveResults(targetDate, provinces, region = 'south') {
+  const regionCfg = REGIONS[region];
+  const RESULTS_DIR = path.join(__dirname, '..', 'results', regionCfg.folder);
+  const INDEX_PATH = path.join(__dirname, '..', 'results', regionCfg.folder, 'index.json');
+
   const results = provinces.map((p) => ({
     id: `${targetDate}-${p.province}`,
     date: targetDate,
     province: p.province,
-    region: 'Miền Nam',
+    region: regionCfg.name,
     prizes: p.prizes,
   }));
 
   const output = {
     date: targetDate,
     fetchedAt: new Date().toISOString(),
+    region: regionCfg.name,
     results,
   };
 
@@ -296,7 +319,7 @@ function saveResults(targetDate, provinces) {
   const filePath = path.join(RESULTS_DIR, `${targetDate}.json`);
   fs.writeFileSync(filePath, JSON.stringify(output, null, 2), 'utf8');
 
-  // Update index
+  // Update region index
   let index = { dates: [] };
   if (fs.existsSync(INDEX_PATH)) {
     try { index = JSON.parse(fs.readFileSync(INDEX_PATH, 'utf8')); } catch {}
@@ -305,19 +328,25 @@ function saveResults(targetDate, provinces) {
     index.dates.push(targetDate);
     index.dates.sort().reverse();
   }
+  index.region = regionCfg.name;
   index.updatedAt = new Date().toISOString();
   fs.writeFileSync(INDEX_PATH, JSON.stringify(index, null, 2), 'utf8');
 }
 
 async function main() {
-  const targetDate = process.argv[2] || todayString();
-  const provinces = await fetchDate(targetDate);
+  const arg1 = process.argv[2];
+  const arg2 = process.argv[3];
+
+  const targetDate = !arg1 || arg1 === 'today' ? todayString() : arg1;
+  const region = arg2 || 'south';
+
+  const provinces = await fetchDate(targetDate, region);
   if (!provinces || provinces.length === 0) {
-    console.log(`[fetch] ❌ No data for ${targetDate}`);
+    console.log(`[fetch] ❌ No data for ${targetDate} [${region}]`);
     process.exit(1);
   }
-  saveResults(targetDate, provinces);
-  console.log(`[fetch] ✅ Saved ${provinces.length} provinces → results/${targetDate}.json`);
+  saveResults(targetDate, provinces, region);
+  console.log(`[fetch] ✅ Saved ${provinces.length} provinces → results/${REGIONS[region].folder}/${targetDate}.json`);
 }
 
 if (require.main === module) {
@@ -327,4 +356,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { fetchDate, saveResults };
+module.exports = { fetchDate, saveResults, REGIONS };
