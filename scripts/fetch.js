@@ -134,10 +134,17 @@ function parseTextPrizes(text) {
 
   let seventh = [];
   let eighth = [];
-  const g7Parts = (map['7'] || '').split(': ');
-  if (g7Parts.length === 2) {
-    seventh = [g7Parts[0].trim()];
-    eighth = [g7Parts[1].trim()];
+  const g7Raw = (map['7'] || '').trim();
+  // RSS nuốt newline giữa "7: <G7-3-digit>" và "8: <G8-2-digit>"
+  // → "175\n8: 50" thành "1758: 50". G7 là 3 chữ số đầu, "8" là prefix dòng G8.
+  const merged = g7Raw.match(/^(\d{3})8:\s*(\d{2})$/);
+  if (merged) {
+    seventh = [merged[1]];
+    eighth = [merged[2]];
+  } else if (g7Raw.includes(': ')) {
+    const parts = g7Raw.split(': ');
+    seventh = [parts[0].trim()];
+    eighth = [parts[1].trim()];
   } else {
     seventh = getList('7');
   }
