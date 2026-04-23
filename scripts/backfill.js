@@ -8,7 +8,10 @@
  *   node scripts/backfill.js 2026-01-01 2026-04-19 central
  *   node scripts/backfill.js 2026-01-01 2026-04-19 north
  *   node scripts/backfill.js 2026-01-01 2026-04-19 all      # cả 3 miền
+ *   node scripts/backfill.js 2026-01-01 2026-04-19 all --force  # ghi đè file đã tồn tại
  */
+
+const FORCE = process.argv.includes('--force');
 
 const fs = require('fs');
 const path = require('path');
@@ -41,7 +44,7 @@ async function backfillOneRegion(start, end, region) {
 
   for (const date of dateRange(start, end)) {
     const filePath = path.join(RESULTS_DIR, `${date}.json`);
-    if (fs.existsSync(filePath)) {
+    if (fs.existsSync(filePath) && !FORCE) {
       console.log(`[${region}] ${date} ⏭️  exists, skip`);
       skipped++;
       continue;
