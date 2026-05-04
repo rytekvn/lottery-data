@@ -1,5 +1,10 @@
 name: Fetch Lottery Results Daily
 
+# Tránh 2 cron chạy đồng thời gây race condition với commit
+concurrency:
+  group: fetch-lottery
+  cancel-in-progress: false
+
 on:
   # Chạy mỗi ngày lúc 11:45 UTC = 18:45 giờ VN (sau khi xổ số quay xong)
   schedule:
@@ -49,10 +54,11 @@ jobs:
             DATE_ARG="$DATE"
           fi
 
-          # Nếu region = all thì chạy cho south + central (north chưa hỗ trợ đầy đủ)
+          # Nếu region = all thì chạy cho cả 3 miền
           if [ "$REGION" = "all" ]; then
             node scripts/fetch.js "${DATE_ARG:-today}" south || echo "South fetch failed"
             node scripts/fetch.js "${DATE_ARG:-today}" central || echo "Central fetch failed"
+            node scripts/fetch.js "${DATE_ARG:-today}" north || echo "North fetch failed"
           else
             node scripts/fetch.js "${DATE_ARG:-today}" "$REGION"
           fi
