@@ -1,0 +1,167 @@
+{
+  "date": "2026-07-04",
+  "fetchedAt": "2026-07-04T12:08:59.509Z",
+  "region": "Miền Nam",
+  "results": [
+    {
+      "id": "2026-07-04-Bình Phước",
+      "date": "2026-07-04",
+      "province": "Bình Phước",
+      "region": "Miền Nam",
+      "prizes": {
+        "specialPrize": "660209",
+        "firstPrize": "37773",
+        "secondPrize": [
+          "46111"
+        ],
+        "thirdPrize": [
+          "67239",
+          "87340"
+        ],
+        "fourthPrize": [
+          "46035",
+          "26275",
+          "28567",
+          "53013",
+          "10055",
+          "05364",
+          "85451"
+        ],
+        "fifthPrize": [
+          "9570"
+        ],
+        "sixthPrize": [
+          "2860",
+          "6359",
+          "5270"
+        ],
+        "seventhPrize": [
+          "881"
+        ],
+        "eighthPrize": [
+          "73"
+        ]
+      }
+    },
+    {
+      "id": "2026-07-04-Hồ Chí Minh",
+      "date": "2026-07-04",
+      "province": "Hồ Chí Minh",
+      "region": "Miền Nam",
+      "prizes": {
+        "specialPrize": "185542",
+        "firstPrize": "10124",
+        "secondPrize": [
+          "31285"
+        ],
+        "thirdPrize": [
+          "38864",
+          "73603"
+        ],
+        "fourthPrize": [
+          "10817",
+          "03857",
+          "08323",
+          "03793",
+          "77113",
+          "00517",
+          "86435"
+        ],
+        "fifthPrize": [
+          "7853"
+        ],
+        "sixthPrize": [
+          "7252",
+          "8102",
+          "2155"
+        ],
+        "seventhPrize": [
+          "817"
+        ],
+        "eighthPrize": [
+          "98"
+        ]
+      }
+    },
+    {
+      "id": "2026-07-04-Hậu Giang",
+      "date": "2026-07-04",
+      "province": "Hậu Giang",
+      "region": "Miền Nam",
+      "prizes": {
+        "specialPrize": "726757",
+        "firstPrize": "75015",
+        "secondPrize": [
+          "01641"
+        ],
+        "thirdPrize": [
+          "57006",
+          "75592"
+        ],
+        "fourthPrize": [
+          "67077",
+          "08305",
+          "01282",
+          "02331",
+          "82221",
+          "63446",
+          "38026"
+        ],
+        "fifthPrize": [
+          "1502"
+        ],
+        "sixthPrize": [
+          "6236",
+          "4951",
+          "8001"
+        ],
+        "seventhPrize": [
+          "716"
+        ],
+        "eighthPrize": [
+          "04"
+        ]
+      }
+    },
+    {
+      "id": "2026-07-04-Long An",
+      "date": "2026-07-04",
+      "province": "Long An",
+      "region": "Miền Nam",
+      "prizes": {
+        "specialPrize": "261058",
+        "firstPrize": "82131",
+        "secondPrize": [
+          "57243"
+        ],
+        "thirdPrize": [
+          "29939",
+          "17831"
+        ],
+        "fourthPrize": [
+          "40755",
+          "05637",
+          "63375",
+          "64344",
+          "45269",
+          "36041",
+          "85702"
+        ],
+        "fifthPrize": [
+          "8021"
+        ],
+        "sixthPrize": [
+          "2529",
+          "2008",
+          "5858"
+        ],
+        "seventhPrize": [
+          "417"
+        ],
+        "eighthPrize": [
+          "64"
+        ]
+      }
+    }
+  ]
+}
