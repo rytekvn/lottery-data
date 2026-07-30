@@ -1,0 +1,127 @@
+{
+  "date": "2026-07-30",
+  "fetchedAt": "2026-07-30T12:15:38.747Z",
+  "region": "Miền Trung",
+  "results": [
+    {
+      "id": "2026-07-30-Bình Định",
+      "date": "2026-07-30",
+      "province": "Bình Định",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "803410",
+        "firstPrize": "36519",
+        "secondPrize": [
+          "51786"
+        ],
+        "thirdPrize": [
+          "56040",
+          "98935"
+        ],
+        "fourthPrize": [
+          "99834",
+          "44872",
+          "65993",
+          "49142",
+          "12671",
+          "42755",
+          "49921"
+        ],
+        "fifthPrize": [
+          "5228"
+        ],
+        "sixthPrize": [
+          "1516",
+          "3042",
+          "4985"
+        ],
+        "seventhPrize": [
+          "447"
+        ],
+        "eighthPrize": [
+          "19"
+        ]
+      }
+    },
+    {
+      "id": "2026-07-30-Quảng Bình",
+      "date": "2026-07-30",
+      "province": "Quảng Bình",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "421281",
+        "firstPrize": "21987",
+        "secondPrize": [
+          "64811"
+        ],
+        "thirdPrize": [
+          "46251",
+          "94681"
+        ],
+        "fourthPrize": [
+          "57370",
+          "61499",
+          "46536",
+          "50508",
+          "87737",
+          "29182",
+          "63609"
+        ],
+        "fifthPrize": [
+          "6239"
+        ],
+        "sixthPrize": [
+          "2137",
+          "0108",
+          "2089"
+        ],
+        "seventhPrize": [
+          "530"
+        ],
+        "eighthPrize": [
+          "28"
+        ]
+      }
+    },
+    {
+      "id": "2026-07-30-Quảng Trị",
+      "date": "2026-07-30",
+      "province": "Quảng Trị",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "969293",
+        "firstPrize": "97754",
+        "secondPrize": [
+          "25818"
+        ],
+        "thirdPrize": [
+          "47291",
+          "62989"
+        ],
+        "fourthPrize": [
+          "92159",
+          "05423",
+          "04388",
+          "13230",
+          "31264",
+          "85994",
+          "89863"
+        ],
+        "fifthPrize": [
+          "2513"
+        ],
+        "sixthPrize": [
+          "3062",
+          "5122",
+          "9259"
+        ],
+        "seventhPrize": [
+          "425"
+        ],
+        "eighthPrize": [
+          "78"
+        ]
+      }
+    }
+  ]
+}
