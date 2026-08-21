@@ -1,0 +1,87 @@
+{
+  "date": "2026-08-21",
+  "fetchedAt": "2026-08-21T12:02:02.795Z",
+  "region": "Miền Trung",
+  "results": [
+    {
+      "id": "2026-08-21-Gia Lai",
+      "date": "2026-08-21",
+      "province": "Gia Lai",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "996587",
+        "firstPrize": "09847",
+        "secondPrize": [
+          "47811"
+        ],
+        "thirdPrize": [
+          "03671",
+          "92783"
+        ],
+        "fourthPrize": [
+          "87979",
+          "88725",
+          "46194",
+          "30754",
+          "58934",
+          "22504",
+          "40778"
+        ],
+        "fifthPrize": [
+          "5790"
+        ],
+        "sixthPrize": [
+          "1510",
+          "5994",
+          "1817"
+        ],
+        "seventhPrize": [
+          "475"
+        ],
+        "eighthPrize": [
+          "28"
+        ]
+      }
+    },
+    {
+      "id": "2026-08-21-Ninh Thuận",
+      "date": "2026-08-21",
+      "province": "Ninh Thuận",
+      "region": "Miền Trung",
+      "prizes": {
+        "specialPrize": "621899",
+        "firstPrize": "49828",
+        "secondPrize": [
+          "52158"
+        ],
+        "thirdPrize": [
+          "76572",
+          "50305"
+        ],
+        "fourthPrize": [
+          "56053",
+          "49743",
+          "49830",
+          "41511",
+          "60329",
+          "05213",
+          "66442"
+        ],
+        "fifthPrize": [
+          "9035"
+        ],
+        "sixthPrize": [
+          "4307",
+          "9217",
+          "9873"
+        ],
+        "seventhPrize": [
+          "240"
+        ],
+        "eighthPrize": [
+          "60"
+        ]
+      }
+    }
+  ]
+}
